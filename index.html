@@ -2,248 +2,152 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Contador de Tempo sem Problemas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para o Amor da Minha Vida</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f2f2f2;
-      padding: 40px;
+      margin: 0;
+      padding: 0;
+      background: #fff0f5;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+      height: 100vh;
     }
 
-    h1 {
-      margin-bottom: 30px;
-    }
-
-    .container {
-      display: flex;
-      justify-content: center;
-      gap: 50px;
-    }
-
-    .contador {
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 280px;
-    }
-
-    .tempo {
-      font-size: 32px;
-      margin: 10px 0;
-      color: #2e7d32;
-    }
-
-    .problemas {
-      font-size: 16px;
-      color: #d32f2f;
-      margin-bottom: 15px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
+    #btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 16px 32px;
+      font-size: 18px;
       border: none;
-      border-radius: 5px;
-      background-color: #d32f2f;
+      background-color: #ff69b4;
       color: white;
+      border-radius: 10px;
       cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      z-index: 3;
     }
 
-    button:hover {
-      background-color: #b71c1c;
-    }
-
-    .reset-geral {
-      margin-bottom: 30px;
-      background-color: #444;
-    }
-
-    .caveira {
-      font-size: 40px;
+    #mensagem {
       display: none;
-      margin-top: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 22px;
+      color: #c71585;
+      width: 90%;
+      max-width: 600px;
+      line-height: 1.6;
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      z-index: 4;
+    }
+
+    .decoracao {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      opacity: 0.8;
+      display: none;
+      z-index: 1;
+    }
+
+    .heart {
+      position: fixed;
+      top: -30px;
+      color: red;
+      font-size: 30px;
+      animation: fall linear;
+      z-index: 2;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Tempo sem Problemas em cada escritório</h1>
-  <!-- ATENÇÃO: O reset geral com senha no frontend NÃO É SEGURO! Veja as notas abaixo. -->
-  <button onclick="resetarTudo()" class="reset-geral">
-    🔄 Resetar Tudo
-  </button>
+  <button id="btn">Clique aqui</button>
 
-  <div class="container">
-    <div class="contador">
-      <h2>Filial RJ</h2>
-      <div class="tempo" id="tempo-rj">--d --h --m --s</div> <!-- Placeholder inicial -->
-      <div class="problemas" id="problemas-rj">Problemas: --</div> <!-- Placeholder inicial -->
-      <button onclick="resetar('rj')">Problema no RJ</button>
-      <div id="caveira-rj" class="caveira">💀</div>
-    </div>
-    <div class="contador">
-      <h2>Filial SP</h2>
-      <div class="tempo" id="tempo-sp">--d --h --m --s</div> <!-- Placeholder inicial -->
-      <div class="problemas" id="problemas-sp">Problemas: --</div> <!-- Placeholder inicial -->
-      <button onclick="resetar('sp')">Problema em SP</button>
-      <div id="caveira-sp" class="caveira">💀</div>
-    </div>
+  <div id="mensagem">
+    <p>Para: Andrea de Lima Guimarães</p>
+    <p>De: Matheus Madureira da Fonseca</p>
+    <p>Eu poderia tentar encontrar as palavras perfeitas,<br>
+    mas nenhuma frase no mundo consegue descrever o quanto você é especial pra mim.</p>
+    <p>Você é o sorriso no meu dia difícil,<br>
+    o abraço que me reconstrói, o porto seguro onde minha alma repousa.</p>
+    <p>Eu não sou perfeito, cometo erros, falho em palavras, mas nunca em amor.<br>
+    Porque amar você é o que dá sentido à minha vida.</p>
+    <p>Eu não me imagino sem você.<br>
+    Você é o amor da minha história, o futuro que eu quero construir,<br>
+    e o presente que eu nunca quero perder.</p>
+    <p>Fica comigo. Pra sempre. ❤️</p>
+    <p>Te amo, Andrea.</p>
+    <p>OBS: Sou péssimo com pedidos de desulpa, por isso demorei o dia inteiro para fazer esse site!</p>
   </div>
 
-  <!-- Adicione os scripts do Firebase AQUI -->
-  <script type="module">
-    // Importe as funções necessárias dos módulos do Firebase
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getFirestore, doc, onSnapshot, setDoc, updateDoc, increment, Timestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  <img src="Y&M.jpg" class="decoracao">
+  <img src="Y&M2.jpg" class="decoracao">
+  <img src="Y&M3.jpg" class="decoracao">
+  <img src="Y&M4.jpg" class="decoracao">
 
-    // Sua configuração do Firebase (PEGUE OS VALORES EXATOS DO SEU CONSOLE DO PROJETO contador-4b1ad)
-    // Vá em Configurações do Projeto -> Seus apps -> Selecione ou adicione um app Web
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY_AQUI", // SUBSTITUA!
-      authDomain: "contador-4b1ad.firebaseapp.com", // Pode variar um pouco
-      projectId: "contador-4b1ad",
-      storageBucket: "contador-4b1ad.appspot.com", // Pode variar
-      messagingSenderId: "SEU_SENDER_ID_AQUI", // SUBSTITUA!
-      appId: "SEU_APP_ID_AQUI" // Formato geralmente "1:PROJECT_NUMBER:web:...", SUBSTITUA!
-      // databaseURL: "https://contador-4b1ad.firebaseio.com" // Se usasse Realtime Database, estaria aqui
-    };
+  <script>
+    const btn = document.getElementById('btn');
+    const mensagem = document.getElementById('mensagem');
+    const decoracoes = document.querySelectorAll('.decoracao');
 
-    // Inicializa o Firebase
-    const app = initializeApp(firebaseConfig);
+    btn.addEventListener('click', () => {
+      mensagem.style.display = 'block';
+      btn.style.display = 'none';
 
-    // Pega a instância do Firestore
-    const db = getFirestore(app);
+      decoracoes.forEach((img, index) => {
+        img.style.display = 'block';
+        let x = window.innerWidth / 2;
+        let y = window.innerHeight / 2;
+        let vx = Math.random() * 4 + 2;
+        let vy = Math.random() * 4 + 2;
 
-    // Referência para o documento no Firestore onde vamos guardar os dados globais
-    // Usaremos um documento único na coleção 'status' chamado 'global'
-    const statusDocRef = doc(db, "status", "global");
+        // aleatoriza direção
+        if (Math.random() > 0.5) vx *= -1;
+        if (Math.random() > 0.5) vy *= -1;
 
-    // Variáveis locais para guardar os dados do Firestore
-    let statusData = {
-        rj: { startTime: Timestamp.now(), problemas: 0 }, // Valores padrão caso o documento não exista ainda
-        sp: { startTime: Timestamp.now(), problemas: 0 }
-    };
+        function move() {
+          x += vx;
+          y += vy;
 
-    // Função para formatar o tempo (mantida do seu código)
-    function formatarTempo(ms) {
-      const totalSegundos = Math.floor(ms / 1000);
-      const dias = Math.floor(totalSegundos / 86400);
-      const horas = Math.floor((totalSegundos % 86400) / 3600);
-      const minutos = Math.floor((totalSegundos % 3600) / 60);
-      const segundos = totalSegundos % 60;
+          if (x <= 0 || x + img.width >= window.innerWidth) vx *= -1;
+          if (y <= 0 || y + img.height >= window.innerHeight) vy *= -1;
 
-      return `${dias.toString().padStart(2, '0')}d `
-           + `${horas.toString().padStart(2, '0')}h `
-           + `${minutos.toString().padStart(2, '0')}m `
-           + `${segundos.toString().padStart(2, '0')}s`;
-    }
+          img.style.left = x + 'px';
+          img.style.top = y + 'px';
+          requestAnimationFrame(move);
+        }
 
-    // Função para ATUALIZAR O DISPLAY no HTML usando os dados globais
-    // Esta função será chamada a cada segundo (pelo setInterval)
-    function atualizarDisplay() {
-      const agora = Date.now();
+        move();
+      });
 
-      // Calcula o tempo decorrido usando o startTime GLOBAL do statusData
-      const tempoRj = agora - statusData.rj.startTime.toDate().getTime(); // Firestore Timestamp precisa ser convertido para Date e depois para ms
-      const tempoSp = agora - statusData.sp.startTime.toDate().getTime();
+      setInterval(() => {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = Math.random() * window.innerWidth + 'px';
+        heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+        heart.textContent = '❤️';
+        document.body.appendChild(heart);
 
-      // Exibe os tempos formatados
-      document.getElementById("tempo-rj").textContent = formatarTempo(tempoRj);
-      document.getElementById("tempo-sp").textContent = formatarTempo(tempoSp);
-
-      // Exibe as contagens de problemas globais
-      document.getElementById("problemas-rj").textContent = `Problemas: ${statusData.rj.problemas}`;
-      document.getElementById("problemas-sp").textContent = `Problemas: ${statusData.sp.problemas}`;
-    }
-
-    // --- Listener em tempo real do Firestore ---
-    // Esta é a parte crucial para a sincronização global!
-    // Quando o documento "status/global" mudar no Firestore, esta função será executada.
-    onSnapshot(statusDocRef, (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        console.log("Dados globais recebidos do Firestore:", docSnapshot.data());
-        const data = docSnapshot.data();
-
-        // Atualiza as variáveis locais com os novos dados do Firestore
-        // Assegura que startTime é um Timestamp (Firestore geralmente garante isso para campos desse tipo)
-        statusData.rj = {
-            startTime: data.rj?.startTime instanceof Timestamp ? data.rj.startTime : Timestamp.now(),
-            problemas: typeof data.rj?.problemas === 'number' ? data.rj.problemas : 0
-        };
-        statusData.sp = {
-            startTime: data.sp?.startTime instanceof Timestamp ? data.sp.startTime : Timestamp.now(),
-            problemas: typeof data.sp?.problemas === 'number' ? data.sp.problemas : 0
-        };
-
-        // A primeira vez que os dados chegam, ou quando eles mudam,
-        // o display é atualizado imediatamente com a hora de início correta.
-        atualizarDisplay();
-
-      } else {
-        // O documento ainda não existe. Crie-o com valores iniciais.
-        console.log("Documento 'status/global' não encontrado no Firestore. Criando...");
-        const initialData = {
-            rj: { startTime: Timestamp.now(), problemas: 0 },
-            sp: { startTime: Timestamp.now(), problemas: 0 }
-        };
-        setDoc(statusDocRef, initialData)
-            .then(() => {
-                console.log("Documento 'status/global' criado com sucesso.");
-                 // A criação do documento vai acionar o onSnapshot novamente com os dados existentes,
-                 // então não precisamos chamar atualizarDisplay() aqui.
-            })
-            .catch((error) => {
-                console.error("Erro ao criar documento 'status/global':", error);
-                // Tratar erro na criação
-            });
-      }
-    }, (error) => {
-        console.error("Erro no listener do Firestore:", error);
-        // Tratar erros de conexão ou permissão aqui
-        document.getElementById("tempo-rj").textContent = "Erro!";
-        document.getElementById("tempo-sp").textContent = "Erro!";
-        document.getElementById("problemas-rj").textContent = "Erro!";
-        document.getElementById("problemas-sp").textContent = "Erro!";
+        setTimeout(() => {
+          heart.remove();
+        }, 5000);
+      }, 200);
     });
-
-
-    // --- Funções para resetar (AGORA ESCREVENDO NO FIRESTORE) ---
-
-    // Função para resetar uma filial específica
-    // Esta função ATUALIZA o documento no Firestore
-    async function resetar(filial) {
-      console.log(`Problema reportado na filial ${filial}. Resetando...`);
-      const caveira = document.getElementById(`caveira-${filial}`);
-
-      try {
-        // Atualiza o campo de startTime da filial e incrementa a contagem de problemas no Firestore
-        await updateDoc(statusDocRef, {
-          [`${filial}.startTime`]: Timestamp.now(), // Define o novo timestamp para a filial
-          [`${filial}.problemas`]: increment(1)    // Incrementa a contagem de problemas
-        });
-        console.log(`Status da filial ${filial} atualizado no Firestore.`);
-
-        // A exibição da caveira continua local no frontend, o reset é global
-         if (caveira) {
-            caveira.style.display = "block";
-            setTimeout(() => {
-              caveira.style.display = "none";
-            }, 2000);
-          }
-
-        // NÃO precisamos chamar atualizarDisplay() aqui, pois o onSnapshot
-        // será acionado automaticamente pela mudança no Firestore e chamará atualizarDisplay()
-        // com os dados mais recentes.
-
-      } catch (error) {
-        console.error(`Erro ao resetar filial ${filial} no Firestore:`, error);
-        alert(`Erro ao reportar problema para ${filial}. Verifique o console.`);
-        // Tratar o erro no frontend
-      }
-    }
-    // Torna a função resetar globalmente acessível para o onclick no HTML
-    window.resetar = resetar;
-
-
-    // Função para reset
+  </script>
+</body>
+</html>
