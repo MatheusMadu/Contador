@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Contador de Tempo sem Problemas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f2f2f2;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+    }
+
+    .contador {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 280px;
+    }
+
+    .tempo {
+      font-size: 32px;
+      margin: 10px 0;
+      color: #2e7d32;
+    }
+
+    .problemas {
+      font-size: 16px;
+      color: #d32f2f;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #d32f2f;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #b71c1c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tempo sem Problemas em cada escritório</h1>
+  <button onclick="resetarTudo()" style="margin-bottom: 30px; background-color: #444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+  🔄 Resetar Tudo
+</button>
+  <div class="container">
+    <div class="contador">
+      <h2>Escritório RJ</h2>
+      <div class="tempo" id="tempo-rj">00d 00h 00m 00s</div>
+      <div class="problemas" id="problemas-rj">Problemas: 0</div>
+      <button onclick="resetar('rj')">Problema no RJ</button>
+    </div>
+    <div class="contador">
+      <h2>Escritório SP</h2>
+      <div class="tempo" id="tempo-sp">00d 00h 00m 00s</div>
+      <div class="problemas" id="problemas-sp">Problemas: 0</div>
+      <button onclick="resetar('sp')">Problema em SP</button>
+    </div>
+  </div>
+
+  <script>
+  // Inicializa dados se não existirem
+  if (!localStorage.getItem("rj")) localStorage.setItem("rj", Date.now());
+  if (!localStorage.getItem("sp")) localStorage.setItem("sp", Date.now());
+  if (!localStorage.getItem("problemas_rj")) localStorage.setItem("problemas_rj", "0");
+  if (!localStorage.getItem("problemas_sp")) localStorage.setItem("problemas_sp", "0");
+
+  function resetar(filial) {
+    localStorage.setItem(filial, Date.now());
+
+    // Incrementa problema
+    const chaveProblema = `problemas_${filial}`;
+    let contagem = parseInt(localStorage.getItem(chaveProblema) || "0");
+    contagem++;
+    localStorage.setItem(chaveProblema, contagem);
+
+    atualizar(); // Atualiza imediatamente
+  }
+
+  function resetarTudo() {
+  const login = prompt("Digite seu login:");
+  const senha = prompt("Digite sua senha:");
+
+  if (login !== "matheus.fonseca" || senha !== "MMFoutubro2000..@@") {
+    alert("Credenciais inválidas. Reset geral cancelado.");
+    return;
+  }
+
+  localStorage.clear(); // Limpa todos os dados
+  location.reload();    // Recarrega a página
+}
+
+  function formatarTempo(ms) {
+    const totalSegundos = Math.floor(ms / 1000);
+    const dias = Math.floor(totalSegundos / 86400);
+    const horas = Math.floor((totalSegundos % 86400) / 3600);
+    const minutos = Math.floor((totalSegundos % 3600) / 60);
+    const segundos = totalSegundos % 60;
+
+    return `${dias.toString().padStart(2, '0')}d `
+         + `${horas.toString().padStart(2, '0')}h `
+         + `${minutos.toString().padStart(2, '0')}m `
+         + `${segundos.toString().padStart(2, '0')}s`;
+  }
+
+  function atualizar() {
+    const agora = Date.now();
+
+    const tempoRj = agora - parseInt(localStorage.getItem("rj"));
+    const tempoSp = agora - parseInt(localStorage.getItem("sp"));
+    const problemasRj = parseInt(localStorage.getItem("problemas_rj"));
+    const problemasSp = parseInt(localStorage.getItem("problemas_sp"));
+
+    document.getElementById("tempo-rj").textContent = formatarTempo(tempoRj);
+    document.getElementById("tempo-sp").textContent = formatarTempo(tempoSp);
+    document.getElementById("problemas-rj").textContent = `Problemas: ${problemasRj}`;
+    document.getElementById("problemas-sp").textContent = `Problemas: ${problemasSp}`;
+  }
+
+  // Atualiza a cada segundo
+  setInterval(atualizar, 1000);
+  atualizar();
+</script>
+</body>
+</html>
