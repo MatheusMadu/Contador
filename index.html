@@ -31,22 +31,24 @@
     }
 
     #mensagem {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      font-size: 19px;
-      color: #c71585;
-      width: 90%;
-      max-width: 600px;
-      line-height: 1.6;
-      background-color: rgba(255, 255, 255, 0.85);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      z-index: 4;
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 22px;
+    color: #c71585;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;      /* ✅ Limita a altura visível */
+    overflow: auto;        /* ✅ Habilita a rolagem interna */
+    line-height: 1.6;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    z-index: 4;
     }
 
     .decoracao {
