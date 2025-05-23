@@ -12,7 +12,7 @@
     }
 
     h1 {
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
     .container {
@@ -54,90 +54,196 @@
     button:hover {
       background-color: #b71c1c;
     }
+
+    .reset-geral {
+      margin-bottom: 30px;
+      background-color: #444;
+    }
+
+    .caveira {
+      font-size: 40px;
+      display: none;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>Tempo sem Problemas em cada escritório</h1>
-  <button onclick="resetarTudo()" style="margin-bottom: 30px; background-color: #444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-  🔄 Resetar Tudo
-</button>
+  <!-- ATENÇÃO: O reset geral com senha no frontend NÃO É SEGURO! Veja as notas abaixo. -->
+  <button onclick="resetarTudo()" class="reset-geral">
+    🔄 Resetar Tudo
+  </button>
+
   <div class="container">
     <div class="contador">
-      <h2>Escritório RJ</h2>
-      <div class="tempo" id="tempo-rj">00d 00h 00m 00s</div>
-      <div class="problemas" id="problemas-rj">Problemas: 0</div>
+      <h2>Filial RJ</h2>
+      <div class="tempo" id="tempo-rj">--d --h --m --s</div> <!-- Placeholder inicial -->
+      <div class="problemas" id="problemas-rj">Problemas: --</div> <!-- Placeholder inicial -->
       <button onclick="resetar('rj')">Problema no RJ</button>
+      <div id="caveira-rj" class="caveira">💀</div>
     </div>
     <div class="contador">
-      <h2>Escritório SP</h2>
-      <div class="tempo" id="tempo-sp">00d 00h 00m 00s</div>
-      <div class="problemas" id="problemas-sp">Problemas: 0</div>
+      <h2>Filial SP</h2>
+      <div class="tempo" id="tempo-sp">--d --h --m --s</div> <!-- Placeholder inicial -->
+      <div class="problemas" id="problemas-sp">Problemas: --</div> <!-- Placeholder inicial -->
       <button onclick="resetar('sp')">Problema em SP</button>
+      <div id="caveira-sp" class="caveira">💀</div>
     </div>
   </div>
 
-  <script>
-  // Inicializa dados se não existirem
-  if (!localStorage.getItem("rj")) localStorage.setItem("rj", Date.now());
-  if (!localStorage.getItem("sp")) localStorage.setItem("sp", Date.now());
-  if (!localStorage.getItem("problemas_rj")) localStorage.setItem("problemas_rj", "0");
-  if (!localStorage.getItem("problemas_sp")) localStorage.setItem("problemas_sp", "0");
+  <!-- Adicione os scripts do Firebase AQUI -->
+  <script type="module">
+    // Importe as funções necessárias dos módulos do Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getFirestore, doc, onSnapshot, setDoc, updateDoc, increment, Timestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-  function resetar(filial) {
-    localStorage.setItem(filial, Date.now());
+    // Sua configuração do Firebase (PEGUE OS VALORES EXATOS DO SEU CONSOLE DO PROJETO contador-4b1ad)
+    // Vá em Configurações do Projeto -> Seus apps -> Selecione ou adicione um app Web
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY_AQUI", // SUBSTITUA!
+      authDomain: "contador-4b1ad.firebaseapp.com", // Pode variar um pouco
+      projectId: "contador-4b1ad",
+      storageBucket: "contador-4b1ad.appspot.com", // Pode variar
+      messagingSenderId: "SEU_SENDER_ID_AQUI", // SUBSTITUA!
+      appId: "SEU_APP_ID_AQUI" // Formato geralmente "1:PROJECT_NUMBER:web:...", SUBSTITUA!
+      // databaseURL: "https://contador-4b1ad.firebaseio.com" // Se usasse Realtime Database, estaria aqui
+    };
 
-    // Incrementa problema
-    const chaveProblema = `problemas_${filial}`;
-    let contagem = parseInt(localStorage.getItem(chaveProblema) || "0");
-    contagem++;
-    localStorage.setItem(chaveProblema, contagem);
+    // Inicializa o Firebase
+    const app = initializeApp(firebaseConfig);
 
-    atualizar(); // Atualiza imediatamente
-  }
+    // Pega a instância do Firestore
+    const db = getFirestore(app);
 
-  function resetarTudo() {
-  const login = prompt("Digite seu login:");
-  const senha = prompt("Digite sua senha:");
+    // Referência para o documento no Firestore onde vamos guardar os dados globais
+    // Usaremos um documento único na coleção 'status' chamado 'global'
+    const statusDocRef = doc(db, "status", "global");
 
-  if (login !== "matheus.fonseca" || senha !== "MMFoutubro2000..@@") {
-    alert("Credenciais inválidas. Reset geral cancelado.");
-    return;
-  }
+    // Variáveis locais para guardar os dados do Firestore
+    let statusData = {
+        rj: { startTime: Timestamp.now(), problemas: 0 }, // Valores padrão caso o documento não exista ainda
+        sp: { startTime: Timestamp.now(), problemas: 0 }
+    };
 
-  localStorage.clear(); // Limpa todos os dados
-  location.reload();    // Recarrega a página
-}
+    // Função para formatar o tempo (mantida do seu código)
+    function formatarTempo(ms) {
+      const totalSegundos = Math.floor(ms / 1000);
+      const dias = Math.floor(totalSegundos / 86400);
+      const horas = Math.floor((totalSegundos % 86400) / 3600);
+      const minutos = Math.floor((totalSegundos % 3600) / 60);
+      const segundos = totalSegundos % 60;
 
-  function formatarTempo(ms) {
-    const totalSegundos = Math.floor(ms / 1000);
-    const dias = Math.floor(totalSegundos / 86400);
-    const horas = Math.floor((totalSegundos % 86400) / 3600);
-    const minutos = Math.floor((totalSegundos % 3600) / 60);
-    const segundos = totalSegundos % 60;
+      return `${dias.toString().padStart(2, '0')}d `
+           + `${horas.toString().padStart(2, '0')}h `
+           + `${minutos.toString().padStart(2, '0')}m `
+           + `${segundos.toString().padStart(2, '0')}s`;
+    }
 
-    return `${dias.toString().padStart(2, '0')}d `
-         + `${horas.toString().padStart(2, '0')}h `
-         + `${minutos.toString().padStart(2, '0')}m `
-         + `${segundos.toString().padStart(2, '0')}s`;
-  }
+    // Função para ATUALIZAR O DISPLAY no HTML usando os dados globais
+    // Esta função será chamada a cada segundo (pelo setInterval)
+    function atualizarDisplay() {
+      const agora = Date.now();
 
-  function atualizar() {
-    const agora = Date.now();
+      // Calcula o tempo decorrido usando o startTime GLOBAL do statusData
+      const tempoRj = agora - statusData.rj.startTime.toDate().getTime(); // Firestore Timestamp precisa ser convertido para Date e depois para ms
+      const tempoSp = agora - statusData.sp.startTime.toDate().getTime();
 
-    const tempoRj = agora - parseInt(localStorage.getItem("rj"));
-    const tempoSp = agora - parseInt(localStorage.getItem("sp"));
-    const problemasRj = parseInt(localStorage.getItem("problemas_rj"));
-    const problemasSp = parseInt(localStorage.getItem("problemas_sp"));
+      // Exibe os tempos formatados
+      document.getElementById("tempo-rj").textContent = formatarTempo(tempoRj);
+      document.getElementById("tempo-sp").textContent = formatarTempo(tempoSp);
 
-    document.getElementById("tempo-rj").textContent = formatarTempo(tempoRj);
-    document.getElementById("tempo-sp").textContent = formatarTempo(tempoSp);
-    document.getElementById("problemas-rj").textContent = `Problemas: ${problemasRj}`;
-    document.getElementById("problemas-sp").textContent = `Problemas: ${problemasSp}`;
-  }
+      // Exibe as contagens de problemas globais
+      document.getElementById("problemas-rj").textContent = `Problemas: ${statusData.rj.problemas}`;
+      document.getElementById("problemas-sp").textContent = `Problemas: ${statusData.sp.problemas}`;
+    }
 
-  // Atualiza a cada segundo
-  setInterval(atualizar, 1000);
-  atualizar();
-</script>
-</body>
-</html>
+    // --- Listener em tempo real do Firestore ---
+    // Esta é a parte crucial para a sincronização global!
+    // Quando o documento "status/global" mudar no Firestore, esta função será executada.
+    onSnapshot(statusDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        console.log("Dados globais recebidos do Firestore:", docSnapshot.data());
+        const data = docSnapshot.data();
+
+        // Atualiza as variáveis locais com os novos dados do Firestore
+        // Assegura que startTime é um Timestamp (Firestore geralmente garante isso para campos desse tipo)
+        statusData.rj = {
+            startTime: data.rj?.startTime instanceof Timestamp ? data.rj.startTime : Timestamp.now(),
+            problemas: typeof data.rj?.problemas === 'number' ? data.rj.problemas : 0
+        };
+        statusData.sp = {
+            startTime: data.sp?.startTime instanceof Timestamp ? data.sp.startTime : Timestamp.now(),
+            problemas: typeof data.sp?.problemas === 'number' ? data.sp.problemas : 0
+        };
+
+        // A primeira vez que os dados chegam, ou quando eles mudam,
+        // o display é atualizado imediatamente com a hora de início correta.
+        atualizarDisplay();
+
+      } else {
+        // O documento ainda não existe. Crie-o com valores iniciais.
+        console.log("Documento 'status/global' não encontrado no Firestore. Criando...");
+        const initialData = {
+            rj: { startTime: Timestamp.now(), problemas: 0 },
+            sp: { startTime: Timestamp.now(), problemas: 0 }
+        };
+        setDoc(statusDocRef, initialData)
+            .then(() => {
+                console.log("Documento 'status/global' criado com sucesso.");
+                 // A criação do documento vai acionar o onSnapshot novamente com os dados existentes,
+                 // então não precisamos chamar atualizarDisplay() aqui.
+            })
+            .catch((error) => {
+                console.error("Erro ao criar documento 'status/global':", error);
+                // Tratar erro na criação
+            });
+      }
+    }, (error) => {
+        console.error("Erro no listener do Firestore:", error);
+        // Tratar erros de conexão ou permissão aqui
+        document.getElementById("tempo-rj").textContent = "Erro!";
+        document.getElementById("tempo-sp").textContent = "Erro!";
+        document.getElementById("problemas-rj").textContent = "Erro!";
+        document.getElementById("problemas-sp").textContent = "Erro!";
+    });
+
+
+    // --- Funções para resetar (AGORA ESCREVENDO NO FIRESTORE) ---
+
+    // Função para resetar uma filial específica
+    // Esta função ATUALIZA o documento no Firestore
+    async function resetar(filial) {
+      console.log(`Problema reportado na filial ${filial}. Resetando...`);
+      const caveira = document.getElementById(`caveira-${filial}`);
+
+      try {
+        // Atualiza o campo de startTime da filial e incrementa a contagem de problemas no Firestore
+        await updateDoc(statusDocRef, {
+          [`${filial}.startTime`]: Timestamp.now(), // Define o novo timestamp para a filial
+          [`${filial}.problemas`]: increment(1)    // Incrementa a contagem de problemas
+        });
+        console.log(`Status da filial ${filial} atualizado no Firestore.`);
+
+        // A exibição da caveira continua local no frontend, o reset é global
+         if (caveira) {
+            caveira.style.display = "block";
+            setTimeout(() => {
+              caveira.style.display = "none";
+            }, 2000);
+          }
+
+        // NÃO precisamos chamar atualizarDisplay() aqui, pois o onSnapshot
+        // será acionado automaticamente pela mudança no Firestore e chamará atualizarDisplay()
+        // com os dados mais recentes.
+
+      } catch (error) {
+        console.error(`Erro ao resetar filial ${filial} no Firestore:`, error);
+        alert(`Erro ao reportar problema para ${filial}. Verifique o console.`);
+        // Tratar o erro no frontend
+      }
+    }
+    // Torna a função resetar globalmente acessível para o onclick no HTML
+    window.resetar = resetar;
+
+
+    // Função para reset
